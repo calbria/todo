@@ -88,6 +88,7 @@ function checkEmptyList() {
 // Save to local storage
 function saveToLocal() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
+    console.log('Hello');
 }
 
 // Render task

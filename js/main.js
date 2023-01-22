@@ -8,8 +8,8 @@ const emptyListTitle = document.querySelector('#emptyList > .empty-list__title')
 let tasks = [];
 // Check local storage data
 if (localStorage.getItem('tasks')) {
-   tasks =  JSON.parse(localStorage.getItem('tasks')); 
-   tasks.forEach(renderTask);
+    tasks = JSON.parse(localStorage.getItem('tasks'));
+    tasks.forEach(renderTask);
 }
 
 
@@ -49,17 +49,17 @@ function addTask(event) {
     taskInput.value = '';
     // return focus on input
     taskInput.focus();
-    
-   
+
+
 }
 
 function deleteTask(event) {
 
     if (event.target.dataset.action !== 'delete') return;
 
-    const taskTag = event.target.closest('li'); 
+    const taskTag = event.target.closest('li');
     const id = Number(taskTag.id);
-//    Delete task from array using filter
+    //    Delete task from array using filter
     tasks = tasks.filter(item => item.id !== id);
 
     taskTag.remove();
@@ -88,12 +88,12 @@ function checkEmptyList() {
 // Save to local storage
 function saveToLocal() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
-   alert('Hello');
+
 }
 
 // Render task
 function renderTask(task) {
-    const cssClass = task.done ? 'task-title task-title--done' : 'task-title';
+    const cssClass = task.done ? 'task-title task-tigit tle--done' : 'task-title';
 
     // create new task - html element
     const taskHTML = `<li id='${task.id}' class="list-group-item d-flex justify-content-between task-item">
@@ -111,5 +111,5 @@ function renderTask(task) {
 
     // Add to task list 
     tasksList.insertAdjacentHTML('beforeend', taskHTML);
-   
+
 }

@@ -1,59 +1,114 @@
-// Sidebar button
-document.querySelector('.btn-toggle-sidebar').onclick = function () {
-    document.querySelector('.btn-toggle-sidebar').classList.toggle('btn-toggle-sidebar-active');
-    document.querySelector('.sidebar').classList.toggle('sidebar-mobile-active');
+// Find form element
+const form = document.getElementById('form');
+const taskInput = document.getElementById('taskInput');
+const tasksList = document.getElementById('tasksList');
+const emptyList = document.getElementById('emptyList');
+const emptyListTitle = document.querySelector('#emptyList > .empty-list__title')
+
+let tasks = [];
+// Check local storage data
+if (localStorage.getItem('tasks')) {
+   tasks =  JSON.parse(localStorage.getItem('tasks')); 
+   tasks.forEach(renderTask);
 }
 
-// Show more cards
-const btnMoreCards = document.querySelector('.btn__more');
-const hiddenCards = document.querySelectorAll('.card-hidden');
 
-btnMoreCards.addEventListener('click', function () {
-    hiddenCards.forEach(elem => elem.classList.remove('card-hidden'));
-})
+checkEmptyList();
 
-// Show/hide widget
-const widgets = document.querySelectorAll('.widget');
-widgets.forEach(function (widget) {
-    widget.addEventListener('click', function (elem) {
-        if (elem.target.classList.contains('widget__title')) {
-            elem.target.classList.toggle('widget__title-active');
-            widget.lastElementChild.classList.toggle('widget__body-hidden');
-        }
-    })
-})
+// Add task
+form.addEventListener('submit', addTask);
+
+// Delete task
+tasksList.addEventListener('click', deleteTask);
+
+// Mark as done
+tasksList.addEventListener('click', doneTask);
 
 
-// Location Checkbox 
-const any = document.getElementById('location_05');
-const locationCheck = document.querySelectorAll('[data-location-par]')
-any.addEventListener('change', () => {
-    if (any.checked) {
-        locationCheck.forEach(item => item.checked = false);
+
+// Functions
+
+function addTask(event) {
+    // prevents reloading page after submit
+    event.preventDefault();
+    // text from input 
+    const taskText = taskInput.value;
+    // create object for local storage
+    const newTask = {
+        id: Date.now(),
+        text: taskText,
+        done: false,
     }
 
-})
+    tasks.push(newTask);
+    saveToLocal();
 
-locationCheck.forEach(item => {
-    item.addEventListener('change', () => {
-        any.checked = false;
-    })
-})
+    renderTask(newTask);
+    checkEmptyList();
+    // Clear task input
+    taskInput.value = '';
+    // return focus on input
+    taskInput.focus();
+    
+   
+}
 
-const showHiddenOptions = document.querySelector('.widget__show-hidden');
-const hiddenCheckBox = document.querySelectorAll('.checkbox__hidden');
+function deleteTask(event) {
+
+    if (event.target.dataset.action !== 'delete') return;
+
+    const taskTag = event.target.closest('li'); 
+    const id = Number(taskTag.id);
+//    Delete task from array using filter
+    tasks = tasks.filter(item => item.id !== id);
+
+    taskTag.remove();
+    saveToLocal();
+
+    checkEmptyList();
+
+}
+
+function doneTask(event) {
+    if (event.target.dataset.action !== 'done') return;
+    const taskTag = event.target.closest('li');
+    const taskTitle = taskTag.querySelector('span');
+    taskTitle.classList.toggle('task-title--done');
+    const id = Number(taskTag.id);
+    const task = tasks.find(task => task.id === id);
+    task.done = !task.done;
+    saveToLocal();
+}
+
+function checkEmptyList() {
+    if (tasks.length > 0) {
+        emptyListTitle.setAttribute('hidden', true)
+    } else emptyListTitle.removeAttribute('hidden');
+}
+// Save to local storage
+function saveToLocal() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+// Render task
+function renderTask(task) {
+    const cssClass = task.done ? 'task-title task-title--done' : 'task-title';
+
+    // create new task - html element
+    const taskHTML = `<li id='${task.id}' class="list-group-item d-flex justify-content-between task-item">
+                        <span class="${cssClass}">${task.text}</span>
+                        <div class="task-item__buttons">
+                            <button type="button" data-action="done" class="btn-action">
+                                <img src="./img/tick.svg" alt="Done" width="18" height="18">
+                            </button>
+                            <button type="button" data-action="delete" class="btn-action">
+                                <img src="./img/cross.svg" alt="Done" width="18" height="18">
+                            </button>
+                        </div>
+                    </li>`;
 
 
-showHiddenOptions.addEventListener('click', () => {
-    if (showHiddenOptions.dataset.hidden == 'hidden') {
-        hiddenCheckBox.forEach(item => item.classList.remove('checkbox__hidden'));
-        showHiddenOptions.innerText = 'Show less';
-        showHiddenOptions.dataset.hidden = 'unhidden'
-    } else {
-        hiddenCheckBox.forEach(item => item.classList.add('checkbox__hidden'));
-        showHiddenOptions.innerText = 'Show more';
-        showHiddenOptions.dataset.hidden = 'hidden'
-    }
-});
-
-
+    // Add to task list 
+    tasksList.insertAdjacentHTML('beforeend', taskHTML);
+   
+}

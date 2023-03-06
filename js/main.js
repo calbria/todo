@@ -1,3 +1,5 @@
+console.log('in test mode');
+
 // Find form element
 const form = document.getElementById('form');
 const taskInput = document.getElementById('taskInput');

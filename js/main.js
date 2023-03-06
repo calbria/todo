@@ -1,4 +1,5 @@
 console.log('in test mode');
+console.log('change test');
 
 // Find form element
 const form = document.getElementById('form');
